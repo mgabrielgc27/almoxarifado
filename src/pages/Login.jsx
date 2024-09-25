@@ -17,22 +17,25 @@ export default function Login() {
   const postLogin = async (e) => {
     e.preventDefault();
 
-    console.log(email, password)
-
-    const login = { empresaId: 1, email: email, senha: password };
+    const info = { empresaId: 1, login: email, senha: password };
 
     try {
-      const response = await loginFetch.post("", {
-        body: login
-      })
+      const response = await loginFetch.post("", info)
 
+      if (response.data.status === 200) {
+        const token = response.data.data.token
+        console.log(token, response.data.data.expiration)
+        localStorage.setItem("authToken",token)
+        navigate("/almoxarifado");
+      }
       console.log("resposta: ", response.data)
     } catch (error) {
       console.log("Mensagem de erro: ", error.message)
     }
 
-    navigate("/almoxarifado")
+
   }
+
   return (
     <>
       {/* <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 ">
@@ -47,9 +50,9 @@ export default function Login() {
           </h2>
         </div> */}
       <div className='flex flex-col sm:flex-col items-center md:flex-row lg:flex-row'>
-      
-        <div className="m-10 w-full max-w-80">
-          <form onSubmit={(e) => postLogin(e)} className="flex flex-col gap-3">
+
+        <div className="flex items-center justify-center m-10  md:w-2/6 lg:w-2/6 xl:2/6">
+          <form onSubmit={(e) => postLogin(e)} className="flex flex-col gap-3 w-80">
             <div>
 
               <InputLabel
@@ -98,8 +101,8 @@ export default function Login() {
 
         </div>
 
-        <div className='flex bg-indigo-600 lg:w-full lg:h-screen md:w-full md:h-screen'>
-          
+        <div className='flex bg-indigo-600 lg:w-4/6 lg:h-screen md:w-4/6 md:h-screen'>
+
         </div>
 
       </div>

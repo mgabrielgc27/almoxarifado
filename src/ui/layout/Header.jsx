@@ -1,8 +1,10 @@
 'use client'
 
-import { Link } from 'react-router-dom'
+import Button from '../components/Button'
 
-import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+import { useState, useEffect } from 'react'
 import {
     Dialog,
     DialogPanel,
@@ -24,6 +26,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
+import { IsLogged } from '../../services/homeServices'
 
 const products = [
     { name: 'Analytics', description: 'Get a better understanding of your traffic', href: '#', icon: ChartPieIcon },
@@ -38,10 +41,28 @@ const callsToAction = [
 ]
 
 export default function Example() {
+    const navigate = useNavigate()
+
+    const [authToken, setAuthToken] = useState()
+
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+    useEffect(() => {
+      const token = localStorage.getItem("authToken")
+      if(token){
+        setAuthToken(token)
+      }
+    }, [])
+    
+
+    const handleClickDeslogar = () => {
+        setAuthToken("")
+        localStorage.removeItem("authToken")
+        navigate("/")
+    }
+
     return (
-        <header className="bg-gray-100">
+        <header className="bg-white">
             <nav aria-label="Global" className="mx-auto flex items-center justify-between p-6 lg:px-8">
                 <div className="flex lg:flex-1">
                     <Link to="/" className="-m-1.5 p-1.5">
@@ -66,11 +87,21 @@ export default function Example() {
                     </Link> */}
 
                 </PopoverGroup>
-                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <Link to={"/entrar"} className="text-sm font-semibold leading-6 text-gray-900">
-                        Entrar  <span aria-hidden="true">&rarr;</span>
-                    </Link>
-                </div>
+                {IsLogged(authToken) ?
+                    <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                        <Button
+                            onClick={handleClickDeslogar}
+                            className="text-sm font-semibold leading-6 text-gray-900" >
+                            Deslogar  <span aria-hidden="true">&rarr;</span>
+                        </Button>
+                    </div>
+                    :
+                    <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                        <Link to={"/entrar"} className="text-sm font-semibold leading-6 text-gray-900">
+                            Entrar  <span aria-hidden="true">&rarr;</span>
+                        </Link>
+                    </div>
+                }
             </nav>
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
                 <div className="fixed inset-0 z-10" />
@@ -95,11 +126,20 @@ export default function Example() {
                     </div>
                     <div className="mt-6 flow-root">
                         <div className="-my-6 divide-y divide-gray-500/10">
-                            <div className="py-6">
-                                <Link to={"/entrar"} className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                                    Entrar <span aria-hidden="true">&rarr;</span>
-                                </Link>
-                            </div>
+                            {IsLogged(authToken) ?
+                                <div className="py-6">
+                                    <Button
+                                        onClick={handleClickDeslogar}
+                                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50" >
+                                        Deslogar  <span aria-hidden="true">&rarr;</span>
+                                    </Button>
+                                </div>
+                                :
+                                <div className="py-6">
+                                    <Link to={"/entrar"} className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                                        Entrar <span aria-hidden="true">&rarr;</span>
+                                    </Link>
+                                </div>}
                         </div>
                     </div>
                 </DialogPanel>
