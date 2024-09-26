@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom'
 
 import InputLabel from '../ui/components/InputLabel'
 import Button from '../ui/components/Button'
+import TableItems from '../ui/partials/TableItems'
 
 import Header from '../ui/layout/Header'
-import { almoxarifadoFetch } from '../axios/config'
 import { IsLogged } from '../services/homeServices'
 import axios from 'axios'
 
@@ -38,10 +38,10 @@ export default function Almoxarifado() {
         } catch (error) {
           console.log("Erro: ", error.message)
           localStorage.removeItem("authToken")
-            navigate("/")
+          navigate("/entrar")
         }
       } else {
-        navigate("/")
+        navigate("/entrar")
       }
     }
 
@@ -52,6 +52,35 @@ export default function Almoxarifado() {
     console.log(almoxarifados)
   }, [almoxarifados])
 
+  const deleteAlmoxarifado = (id) => {
+    try {
+
+      const response = axios.delete(`https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado/excluir/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      })
+      
+    } catch (error) {
+      console.log("Erro deletar: ", error.message)
+    }
+  }
+
+  const addAlmoxarifado = (data) => {
+    try {
+      
+        const response = axios.post("https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado/criar", data, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        })
+
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <>
@@ -77,30 +106,9 @@ export default function Almoxarifado() {
             </div>
           </div>
 
-          <div className='flex flex-col'>
-            {almoxarifados.length === 0 ? <p>Carregando...</p> :
-              (
-                <>
-                  <hr />
-                  <div className='flex justify-between mx-6 my-3'>
-                    <h3 className='w-1/12 font-semibold'>Id Empresa</h3>
-                    <h3 className='w-2/5 font-semibold'>Descrição</h3>
-                    <h3 className='w-1/12 font-semibold'>Tipo</h3>
-                  </div>
-                  {almoxarifados.map(a => (
-                    <>
-                      <hr />
-                      <div className='flex justify-between mx-6 my-3 text-indigo-600'>
-                        <p className='w-1/12'>{a.empresaId}</p>
-                        <p className='w-2/5'>{a.descricao}</p>
-                        <p className='w-1/12'>{a.tipo}</p>
-                      </div>
-                    </>
-                  ))}
-                </>
-              )
-            }
-          </div>
+          <TableItems
+            almoxarifados={almoxarifados} />
+          
         </div>
       </div>
     </>

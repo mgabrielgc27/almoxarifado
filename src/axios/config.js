@@ -6,13 +6,3 @@ export const loginFetch = axios.create({
         "Content-Type": "application/json"
     }
 })
-
-
-
-export const almoxarifadoFetch = axios.create({
-    baseURL: "https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado",
-    headers: {
-        "Content-Type": "application/json"
-    }
-    
-})
