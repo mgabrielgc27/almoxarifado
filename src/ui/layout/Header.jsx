@@ -4,59 +4,47 @@ import Button from '../components/Button'
 
 import { Link, useNavigate } from 'react-router-dom'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, isValidElement } from 'react'
 import {
     Dialog,
     DialogPanel,
-    Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
-    Popover,
-    PopoverButton,
-    PopoverGroup,
-    PopoverPanel,
+    PopoverGroup
 } from '@headlessui/react'
 import {
-    ArrowPathIcon,
     Bars3Icon,
-    ChartPieIcon,
-    CursorArrowRaysIcon,
-    FingerPrintIcon,
-    SquaresPlusIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
-import { IsLogged } from '../../services/homeServices'
 
-const products = [
-    { name: 'Analytics', description: 'Get a better understanding of your traffic', href: '#', icon: ChartPieIcon },
-    { name: 'Engagement', description: 'Speak directly to your customers', href: '#', icon: CursorArrowRaysIcon },
-    { name: 'Security', description: 'Your customers’ data will be safe and secure', href: '#', icon: FingerPrintIcon },
-    { name: 'Integrations', description: 'Connect with third-party tools', href: '#', icon: SquaresPlusIcon },
-    { name: 'Automations', description: 'Build strategic funnels that will convert', href: '#', icon: ArrowPathIcon },
-]
-const callsToAction = [
-    { name: 'Watch demo', href: '#', icon: PlayCircleIcon },
-    { name: 'Contact sales', href: '#', icon: PhoneIcon },
-]
+import isTokenValid from '../../services/isTokenValid'
 
 export default function Example() {
     const navigate = useNavigate()
 
-    const [authToken, setAuthToken] = useState()
+    const [authToken, setAuthToken] = useState({})
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     useEffect(() => {
-      const token = localStorage.getItem("authToken")
-      if(token){
-        setAuthToken(token)
+      const auToken = JSON.parse(localStorage.getItem("authToken"))
+      //console.log(auToken)
+      if(auToken){
+        setAuthToken(auToken)
       }
     }, [])
+
+    const isLogged = () => {
+
+        const token = authToken.token;
+
+        const exp = authToken.expToken;
+
+        return isTokenValid(token, exp)
+    
+    }
     
 
     const handleClickDeslogar = () => {
-        setAuthToken("")
+        setAuthToken({})
         localStorage.removeItem("authToken")
         navigate("/")
     }
@@ -87,7 +75,7 @@ export default function Example() {
                     </Link> */}
 
                 </PopoverGroup>
-                {IsLogged(authToken) ?
+                {isLogged() ?
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                         <Button
                             onClick={handleClickDeslogar}
@@ -126,7 +114,7 @@ export default function Example() {
                     </div>
                     <div className="mt-6 flow-root">
                         <div className="-my-6 divide-y divide-gray-500/10">
-                            {IsLogged(authToken) ?
+                            {isLogged() ?
                                 <div className="py-6">
                                     <Button
                                         onClick={handleClickDeslogar}

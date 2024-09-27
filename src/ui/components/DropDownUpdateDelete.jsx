@@ -4,9 +4,14 @@ import { MdDelete, MdEdit } from "react-icons/md";
 
 import Button from './Button';
 
-const DropDownUpdateDelete = () => {
+const DropDownUpdateDelete = ({id, deletar, handleClickEditar}) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    const handleClickDeletar = async () => {
+        await deletar(id)
+        setIsOpen(false)
+    }
 
     // Função para alternar a exibição do menu
     const toggleMenu = () => {
@@ -38,12 +43,12 @@ const DropDownUpdateDelete = () => {
             {isOpen && (
                 <div className="flex flex-col gap-2 dropdown-menu">
                     <Button
-                        onClick={() => alert('Editar clicado')}
+                        onClick={() => handleClickEditar(id)}
                         className="flex items-center gap-2 p-1 rounded-md pr-24 text-gray-400  hover:bg-gray-100 hover:text-gray-500" >
                         <MdEdit className='text-2xl'/> Editar
                     </Button>
                     <Button
-                        onClick={() => alert('Deletar clicado')}
+                        onClick={handleClickDeletar}
                         className="flex items-center gap-2 p-1 rounded-md pr-24 text-gray-400  hover:bg-gray-100 hover:text-gray-500" >
                         <MdDelete className='text-2xl'/> Deletar
                     </Button>

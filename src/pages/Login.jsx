@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import Input from '../ui/components/Input'
 import Button from '../ui/components/Button'
+import Label from '../ui/components/Label'
 import InputLabel from '../ui/components/InputLabel'
 import { loginFetch } from '../axios/config'
 
@@ -24,8 +25,11 @@ export default function Login() {
 
       if (response.data.status === 200) {
         const token = response.data.data.token
-        console.log(token, response.data.data.expiration)
-        localStorage.setItem("authToken",token)
+        const expToken = response.data.data.expiration
+        // console.log(expToken, new Date(expToken))
+        // console.log(token, response.data.data.expiration)
+        const authToken = { token, expToken}
+        localStorage.setItem("authToken",JSON.stringify(authToken))
         navigate("/almoxarifado");
       }
       console.log("resposta: ", response.data)
@@ -67,17 +71,17 @@ export default function Login() {
             </div>
 
             <div>
-              {/* <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
                 <Label
                   Id="password" >
                   Senha
                 </Label>
-                <div className="text-sm">
+              {/*   <div className="text-sm">
                   <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
                     Esqueceu sua senha?
                   </a>
-                </div>
-              </div> */}
+                </div> */}
+              </div> 
               <div className="mt-0">
                 <Input
                   Id="password"

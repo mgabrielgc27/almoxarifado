@@ -6,7 +6,7 @@ import Button from '../ui/components/Button'
 
 import Header from '../ui/layout/Header'
 import { Link } from 'react-router-dom'
-import { IsLogged } from '../services/homeServices'
+import isTokenValid from '../services/isTokenValid'
 
 
 
@@ -15,8 +15,18 @@ export default function Home() {
     const navigate = useNavigate()
 
     const handleClickLogin = () => {
-        const token = localStorage.getItem("authToken");
-        if(IsLogged(token))
+        const auToken = JSON.parse(localStorage.getItem("authToken"));
+        if(!auToken){
+            navigate("/entrar");
+            return
+        }
+
+        const token = auToken.token;
+        const exp = auToken.expToken;
+
+        console.log(isTokenValid(token, exp))
+
+        if(isTokenValid(token, exp))
             navigate("/almoxarifado");
         else 
             navigate("/entrar");
