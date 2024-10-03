@@ -1,10 +1,15 @@
-import axios from "axios";
+import axiosInterceptor from "../axios/axiosInterceptor";
 
-const addAlmoxarifado = async (newPost, token) => {
+const apiAlmoxarifado = import.meta.env.VITE_API_ALMOXARIFADO
+
+const addAlmoxarifado = async (newPost, token, navigate) => {
     console.log(newPost)
+
     try {
 
-        const response = await axios.post("https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado/criar", newPost, {
+        const axios = axiosInterceptor(navigate);
+
+        const response = await axios.post(`${apiAlmoxarifado}/criar`, newPost, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"

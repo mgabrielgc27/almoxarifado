@@ -1,11 +1,15 @@
-import axios from "axios"
+import axiosInterceptor from "../axios/axiosInterceptor";
 
-const deleteAlmoxarifado = async (id, token) => {
+const apiAlmoxarifado = import.meta.env.VITE_API_ALMOXARIFADO
+
+const deleteAlmoxarifado = async (id, token, navigate) => {
 
 
     try {
 
-        const response = await axios.delete(`https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado/excluir/${id}`, {
+        const axios = axiosInterceptor(navigate)
+
+        const response = await axios.delete(`${apiAlmoxarifado}/excluir/${id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"

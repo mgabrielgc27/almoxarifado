@@ -3,38 +3,23 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Button from '../ui/components/Button'
-
-import Header from '../ui/layout/Header'
-import { Link } from 'react-router-dom'
-import isTokenValid from '../services/isTokenValid'
-
-
+import NavSideBar from '../ui/partials/NavSideBar'
 
 export default function Home() {
 
     const navigate = useNavigate()
 
     const handleClickLogin = () => {
-        const auToken = JSON.parse(localStorage.getItem("authToken"));
-        if(!auToken){
-            navigate("/entrar");
-            return
-        }
+        const token = JSON.parse(localStorage.getItem("authToken"))
 
-        const token = auToken.token;
-        const exp = auToken.expToken;
-
-        console.log(isTokenValid(token, exp))
-
-        if(isTokenValid(token, exp))
-            navigate("/almoxarifado");
-        else 
-            navigate("/entrar");
+        if(token) navigate("/almoxarifado");
+        else navigate("/entrar"); 
+            
     }
 
     return (
         <>
-            <Header />
+            <NavSideBar/>
             <section className="py-10 sm:py-16 lg:py-24">
                 <div className="max-w-5xl px-4 mx-auto sm:px-6 lg:px-8">
                     <div className="grid items-center md:grid-cols-2 md:gap-x-20 gap-y-10">

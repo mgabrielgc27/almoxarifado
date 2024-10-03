@@ -1,10 +1,14 @@
-import axios from "axios"
+import axiosInterceptor from "../axios/axiosInterceptor";
 
-const updateAlmoxarifado = async (newData, token) => {
+const apiAlmoxarifado = import.meta.env.VITE_API_ALMOXARIFADO
+
+const updateAlmoxarifado = async (newData, token, navigate) => {
 
     try {
 
-        const response = await axios.put("https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado/alterar", newData, {
+        const axios = axiosInterceptor(navigate)
+
+        const response = await axios.put(`${apiAlmoxarifado}/alterar`, newData, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"

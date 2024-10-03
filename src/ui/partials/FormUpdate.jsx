@@ -3,13 +3,15 @@ import React from 'react'
 import Label from '../components/Label'
 import Textarea from '../components/Textarea'
 import Button from '../components/Button'
-import InputLabel from '../components/InputLabel'
+import Form from '../components/Form'
+import SelectLabel from '../components/SelectLabel'
+import { tiposAlmoxarifados } from '../../services/constants'
 
-export default function FormUpdate({ update, setDescricao, setTipo, handleClickCancelarEditar }) {
+export default function FormUpdate({ update, setDescricao, setTipo, handleClickCancelarEditar, valueDescricao, valueTipo }) {
     return (
-        <div className="flex flex-col items-center mt-32">
-            <form className="flex flex-col gap-2 lg:w-2/6 md:w-3/6 bg-white rounded-lg shadow-xl p-4"
-                onSubmit={(e) => update(e)}>
+        <div className="flex flex-col items-center">
+            <Form
+                onSubmit={(e) => update(e)} >
 
                 <div>
                     <Label
@@ -19,20 +21,23 @@ export default function FormUpdate({ update, setDescricao, setTipo, handleClickC
                     </Label>
                     <Textarea
                         required={true}
+                        value={valueDescricao}
                         name="descricao"
                         id="descricao"
                         onChange={(e) => setDescricao(e.target.value)}
                         placeholder="Digite a descrição"
-                        className="w-full" />
+                        className="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                 </div>
 
                 <div>
-                    <InputLabel
+                    <SelectLabel
                         name="Tipo"
-                        Id="id-tipo"
+                        Id="tipo"
+                        value={valueTipo}
                         required={true}
                         onChange={(e) => setTipo(e.target.value)}
-                        placeholder="Digite o tipo" />
+                        placeholder="Escolha o tipo"
+                        options={tiposAlmoxarifados} />
                 </div>
 
                 <div className='flex justify-between gap-1 mt-3'>
@@ -50,7 +55,7 @@ export default function FormUpdate({ update, setDescricao, setTipo, handleClickC
                     </Button>
                 </div>
 
-            </form>
+            </Form>
         </div>
     )
 }

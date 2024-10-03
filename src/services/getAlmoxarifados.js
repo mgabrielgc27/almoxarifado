@@ -1,26 +1,28 @@
-import axios from "axios";
+import axiosInterceptor from "../axios/axiosInterceptor";
 
-const getAlmoxarifados = async (token) => {
+const apiAlmoxarifado = import.meta.env.VITE_API_ALMOXARIFADO
 
+const getAlmoxarifados = async (token, navigate) => {
+    console.log(token)
+
+    const axios = axiosInterceptor(navigate)
 
     try {
-        const response = await axios.get("https://compsysweb.pdvfiscal.com.br/api/v1/almoxarifado/listar", {
+
+        const response = await axios.get(`${apiAlmoxarifado}/listar`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             }
 
         });
-        if (response.status === 200) {
-            console.log("Status get: ", response.data.status)
-            return response.data.data;
-        }
 
-        
+        console.log("Status get: ", response.status)
+        return response.data.data;
+
 
     } catch (error) {
-        console.log("Erro: ", error.message)
-        localStorage.removeItem("authToken")
+        console.log("Erro get: ", error.message)
     }
 
 

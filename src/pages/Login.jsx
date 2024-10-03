@@ -3,60 +3,34 @@ import React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import Input from '../ui/components/Input'
 import Button from '../ui/components/Button'
-import Label from '../ui/components/Label'
 import InputLabel from '../ui/components/InputLabel'
-import { loginFetch } from '../axios/config'
+import fetchLogin from '../services/fetchLogin'
 
 export default function Login() {
   const navigate = useNavigate()
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState()
+  const [password, setPassword] = useState()
 
-  const postLogin = async (e) => {
+  const login = async (e) => {
+
     e.preventDefault();
 
-    const info = { empresaId: 1, login: email, senha: password };
+    const postLogin = { empresaId: 1, login: email, senha: password };
 
-    try {
-      const response = await loginFetch.post("", info)
+    await fetchLogin(postLogin);
 
-      if (response.data.status === 200) {
-        const token = response.data.data.token
-        const expToken = response.data.data.expiration
-        // console.log(expToken, new Date(expToken))
-        // console.log(token, response.data.data.expiration)
-        const authToken = { token, expToken}
-        localStorage.setItem("authToken",JSON.stringify(authToken))
-        navigate("/almoxarifado");
-      }
-      console.log("resposta: ", response.data)
-    } catch (error) {
-      console.log("Mensagem de erro: ", error.message)
-    }
-
+    navigate("/almoxarifado")
 
   }
 
   return (
     <>
-      {/* <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 ">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            alt="Your Company"
-            src="src\assets\mainIcon.png"
-            className="mx-auto h-12 w-auto"
-          />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Entre na sua conta
-          </h2>
-        </div> */}
       <div className='flex flex-col sm:flex-col items-center md:flex-row lg:flex-row'>
 
         <div className="flex items-center justify-center m-10  md:w-2/6 lg:w-2/6 xl:2/6">
-          <form onSubmit={(e) => postLogin(e)} className="flex flex-col gap-3 w-80">
+          <form onSubmit={(e) => login(e)} className="flex flex-col gap-3 w-80">
             <div>
 
               <InputLabel
@@ -71,26 +45,16 @@ export default function Login() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <Label
-                  Id="password" >
-                  Senha
-                </Label>
-              {/*   <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Esqueceu sua senha?
-                  </a>
-                </div> */}
-              </div> 
-              <div className="mt-0">
-                <Input
-                  Id="password"
-                  type="password"
-                  placeholder="Senha"
-                  required={true}
-                  autoComplete="current-password"
-                  onChange={(e) => setPassword(e.target.value)} />
-              </div>
+              
+              <InputLabel
+                name="Senha"
+                Id="password"
+                type="password"
+                placeholder="Senha"
+                required={true}
+                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)} />
+            
             </div>
 
             <div className='mt-4'>

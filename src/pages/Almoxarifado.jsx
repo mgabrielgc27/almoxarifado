@@ -7,13 +7,14 @@ import Button from '../ui/components/Button'
 import TableItems from '../ui/partials/TableItems'
 import FormNewPost from '../ui/partials/FormNewPost'
 
-import Header from '../ui/layout/Header'
-import isTokenValid from '../services/isTokenValid'
 import getAlmoxarifados from '../services/getAlmoxarifados'
 import addAlmoxarifado from '../services/addAlmoxarifado'
 import deleteAlmoxarifado from '../services/deleteAlmoxarifado'
 import updateAlmoxarifado from '../services/updateAlmoxarifado'
 import FormUpdate from '../ui/partials/FormUpdate'
+import NavSideBar from '../ui/partials/NavSideBar'
+import SidebarForms from '../ui/partials/SidebarForms'
+import Loading from '../ui/components/Loading'
 
 export default function Almoxarifado() {
 
@@ -23,11 +24,11 @@ export default function Almoxarifado() {
 
   const [almoxarifados, setAlmoxarifados] = useState([])
 
-  const [empresaId, setEmpresaId] = useState("")
+  const [empresaId, setEmpresaId] = useState()
 
-  const [descricao, setDescricao] = useState("")
+  const [descricao, setDescricao] = useState()
 
-  const [tipo, setTipo] = useState("")
+  const [tipo, setTipo] = useState()
 
   const [isAdding, setIsAdding] = useState(false)
 
@@ -35,52 +36,34 @@ export default function Almoxarifado() {
 
   const [updateId, setUpdateId] = useState()
 
-  useEffect(() => {
-    const auToken = JSON.parse(localStorage.getItem("authToken"))
+  const [searchItem, setSearchItem] = useState("")
 
-    if (auToken) {
-      setAuthToken(auToken)
+  useEffect(() => {
+
+    const token = JSON.parse(localStorage.getItem("authToken"))
+
+    if (token) {
+      setAuthToken(token);
+    } else {
+      navigate("/entrar")
     }
 
   }, [])
 
-
   useEffect(() => {
-    if (authToken) {
-      const token = authToken.token
-      const exp = authToken.expToken
 
-      // console.log(authToken, token, exp)
+    if (authToken)
+      read()
 
-      // console.log(isTokenValid(token, exp))
-
-      if (isTokenValid(token, exp)) {
-        read()
-      } else {
-        navigate("/entrar")
-      }
-
-    }
   }, [authToken])
-
-  // useEffect(() => {
-  //   if(almoxarifados.length > 0)
-  //     console.log(almoxarifados)
-  // }, [almoxarifados])
-
 
 
   const create = async (e) => {
     e.preventDefault()
 
-    if (!isTokenValid(authToken.token, authToken.expToken)) {
-      navigate("/entrar")
-      return
-    }
-
     const post = { empresaId, descricao, tipo }
 
-    await addAlmoxarifado(post, authToken.token);
+    await addAlmoxarifado(post, authToken, navigate);
     await read();
 
     setEmpresaId("")
@@ -92,40 +75,27 @@ export default function Almoxarifado() {
 
 
   const read = async () => {
-    if (!isTokenValid(authToken.token, authToken.expToken)) {
-      navigate("/entrar")
-      return
-    }
-    const data = await getAlmoxarifados(authToken.token);
+
+    const data = await getAlmoxarifados(authToken, navigate);
     setAlmoxarifados(data);
   }
 
 
   const deletar = async (id) => {
-    if (!isTokenValid(authToken.token, authToken.expToken)) {
-      navigate("/entrar")
-      return
-    }
 
-    await deleteAlmoxarifado(id, authToken.token);
+    await deleteAlmoxarifado(id, authToken, navigate);
     await read();
   }
 
 
   const update = async (e) => {
-   
+
     e.preventDefault()
-    
-    if (!isTokenValid(authToken.token, authToken.expToken)) {
-      navigate("/entrar")
-      return
-    }
-    
-    console.log(updateId)
-    const updatePut = { id: updateId, descricao, tipo}
-    
-    await updateAlmoxarifado(updatePut, authToken.token)
-    
+
+    const updatePut = { id: updateId, descricao, tipo }
+
+    await updateAlmoxarifado(updatePut, authToken, navigate)
+
     await read()
 
     setUpdateId()
@@ -136,12 +106,21 @@ export default function Almoxarifado() {
 
 
   const handleClickAdicionar = () => {
+    setIsUpdating(false)
     setIsAdding(true)
   }
 
-  const handleClickEditar = (id) => {
+  const handleClickEditar = (id, description, type, setIsOpen) => {
+    setIsAdding(false)
     setIsUpdating(true)
-    setUpdateId(id)
+    setIsOpen(false)
+
+    if (id < 1 && id > 3) setUpdateId(0);
+    else setUpdateId(id);
+
+    setDescricao(description)
+    setTipo(type)
+
   }
 
   const handleClickCancelarAdicionar = () => {
@@ -155,35 +134,61 @@ export default function Almoxarifado() {
     setIsUpdating(false)
   }
 
+  const filteredAlmoxarifados = almoxarifados.filter((almox) => {
+    return (
+      almox.id.toString().includes(searchItem) ||
+      almox.descricao.toLowerCase().includes(searchItem.toLowerCase())
+    );
+  });
+
 
   return (
     <>
-      <Header />
-      {isAdding ?
+      {almoxarifados.length === 0 ?
 
-        (<FormNewPost
-          create={create}
-          data={{ empresaId, descricao, tipo }}
-          setEmpresaId={setEmpresaId}
-          setDescricao={setDescricao}
-          setTipo={setTipo}
-          handleClickCancelar={handleClickCancelarAdicionar} />)
+        <Loading />
 
         :
 
-        isUpdating ?
+        <>
+          <NavSideBar />
 
-          (<FormUpdate
-            update={update}
-            setDescricao={setDescricao}
-            setTipo={setTipo}
-            handleClickCancelarEditar={handleClickCancelarEditar} />)
+          <SidebarForms isOpen={isAdding ? isAdding : isUpdating}>
+            {isAdding ?
 
-          :
+              (<FormNewPost
+                create={create}
+                data={{ empresaId, descricao, tipo }}
+                setEmpresaId={setEmpresaId}
+                setDescricao={setDescricao}
+                setTipo={setTipo}
+                handleClickCancelar={handleClickCancelarAdicionar} />)
 
-          (<div className='flex flex-col max-w-full px-4 sm:px-6 lg:px-8 mb-8'>
+              :
+
+              isUpdating ?
+
+                (<FormUpdate
+                  valueDescricao={descricao}
+                  valueTipo={tipo}
+                  update={update}
+                  setDescricao={setDescricao}
+                  setTipo={setTipo}
+                  handleClickCancelarEditar={handleClickCancelarEditar} />)
+
+                :
+
+                (<div className="lg:w-96 md:w-96 p-4">
+
+                </div>)
+            }
+
+          </SidebarForms>
+
+          <div className='flex flex-col max-w-full px-4 sm:px-6 lg:px-8 mb-8'>
             <div className='flex flex-col w-2/5 py-6'>
               <InputLabel
+                onChange={(e) => setSearchItem(e.target.value)}
                 Id="barra-pesquisa"
                 name="Pesquisa"
                 type="text"
@@ -191,26 +196,29 @@ export default function Almoxarifado() {
             </div>
             <div className='flex flex-col shadow-lg rounded-md bg-white'>
               <div className='flex justify-between items-center mx-6 my-3'>
-                <h3 className='font-semibold'>
+                <h3 className='font-semibold w-11/12'>
                   Almoxarifados
                 </h3>
-                <div>
-                  <Button
-                    onClick={handleClickAdicionar}
-                    className="flex w-full justify-center border rounded-md border-indigo-500 bg-indigo-600 hover:bg-white px-5 py-1.5 text-sm font-semibold leading-6 text-white hover:text-indigo-600 transition-all shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" >
-                    Adicionar
-                  </Button>
+                <div className='lg:w-1/12'>
+                  <div>
+                    <Button
+                      onClick={handleClickAdicionar}
+                      className="flex w-full justify-center border rounded-md border-indigo-500 bg-indigo-600 hover:bg-white px-5 py-1.5 text-sm font-semibold leading-6 text-white hover:text-indigo-600 transition-all shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" >
+                      Adicionar
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               <TableItems
-                almoxarifados={almoxarifados}
+                filteredAlmoxarifados={filteredAlmoxarifados}
                 deletar={deletar}
                 handleClickEditar={handleClickEditar} />
 
             </div>
-          </div>)
-      }
+
+          </div>
+        </>}
     </>
   )
 }

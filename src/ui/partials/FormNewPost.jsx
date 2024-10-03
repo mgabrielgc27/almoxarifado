@@ -4,13 +4,16 @@ import InputLabel from '../components/InputLabel'
 import Label from '../components/Label'
 import Textarea from '../components/Textarea'
 import Button from '../components/Button'
+import Form from '../components/Form'
+import SelectLabel from '../components/SelectLabel'
+import { tiposAlmoxarifados } from '../../services/constants'
 
 export default function FormNewPost({ create, setEmpresaId, setDescricao, setTipo, handleClickCancelar }) {
   return (
-    <div className="flex flex-col items-center mt-32">
-      <form 
-        onSubmit={(e) => create(e)}
-        className="flex flex-col gap-2 lg:w-2/6 md:w-3/6 bg-white rounded-lg shadow-xl p-4" >
+    <div className="flex flex-col items-center">
+      <Form
+        onSubmit={(e) => create(e)} >
+          
         <div>
           <InputLabel
             name="Id Empresa"
@@ -32,16 +35,17 @@ export default function FormNewPost({ create, setEmpresaId, setDescricao, setTip
             id="descricao"
             onChange={(e) => setDescricao(e.target.value)}
             placeholder="Digite a descrição"
-            className="w-full" />
+            className="block w-full border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
         </div>
 
         <div>
-          <InputLabel
+          <SelectLabel
             name="Tipo"
-            Id="id-tipo"
+            Id="tipo"
             required={true}
             onChange={(e) => setTipo(e.target.value)}
-            placeholder="Digite o tipo" />
+            placeholder="Escolha o tipo"
+            options={tiposAlmoxarifados} />
         </div>
 
         <div className='flex justify-between gap-1 mt-3'>
@@ -59,7 +63,7 @@ export default function FormNewPost({ create, setEmpresaId, setDescricao, setTip
           </Button>
         </div>
 
-      </form>
+      </Form>
     </div>
   )
 }
